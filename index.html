@@ -863,12 +863,12 @@ nav.scrolled{
 <!-- ===== HERO ===== -->
 <section class="hero" id="home">
   <div class="hero-top">
-    <div class="hero-eyebrow">Android Dev · Frontend Eng · UI/UX · Rawalpindi PK</div>
+    <div class="hero-eyebrow">Creative Nomad · Product & Brand Designer · Remote</div>
 
     <h1 class="hero-headline">
-      <span class="line"><span>Web-Apps</span></span>
-      <span class="line"><span>developer</span></span>
-      <span class="line"><span>& builder.</span></span>
+      <span class="line"><span>CREATIVE</span></span>
+      <span class="line"><span>NOMAD</span></span>
+      <span class="line"><span>BUILDING DIGITAL PRODUCTS</span></span>
     </h1>
 
     <div class="hero-photo-wrap">
@@ -1251,6 +1251,30 @@ nav.scrolled{
   </div>
 </section>
 
+<!-- ===== TESTIMONIALS ===== -->
+<section class="section-wrap" id="testimonials">
+  <div class="section-header sr">
+    <div>
+      <div class="section-eyebrow">Trust</div>
+      <div class="section-title">Testimonials.</div>
+    </div>
+  </div>
+  <div class="extras-grid sr" style="grid-template-columns:repeat(1,1fr); gap:1rem;">
+    <div class="extra-card" style="border-color:var(--border2);">
+      <div class="extra-card-icon">🗣</div>
+      <div class="extra-card-title">Matthis-style praise</div>
+      <div class="extra-card-sub">"Abdus is a fast, creative, and reliable designer and dev who delivers clean digital branding with strong UX."</div>
+      <div class="extra-tags"><span class="extra-tag">client</span><span class="extra-tag">design</span></div>
+    </div>
+    <div class="extra-card" style="border-color:var(--border2);">
+      <div class="extra-card-icon">🌟</div>
+      <div class="extra-card-title">Finsweet-level impact</div>
+      <div class="extra-card-sub">"Exceptional attention to detail, quick concept to launch, and excellent communication throughout the project."</div>
+      <div class="extra-tags"><span class="extra-tag">collaboration</span><span class="extra-tag">UX</span></div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== CONTACT ===== -->
 <section class="contact-section section-wrap" id="contact">
   <div class="contact-big sr">
@@ -1345,9 +1369,24 @@ setTimeout(()=>{
   document.getElementById('loader').classList.add('exit');
 },1600);
 
-/* ===== NAV SCROLL ===== */
+/* ===== NAV SCROLL + PARALLAX ===== */
+const heroPhotoWrap = document.querySelector('.hero-photo-wrap');
+const heroHeadline = document.querySelector('.hero-headline');
+const heroEyebrow = document.querySelector('.hero-eyebrow');
+
 window.addEventListener('scroll',()=>{
-  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60);
+  const y = window.scrollY;
+  document.getElementById('nav').classList.toggle('scrolled', y > 60);
+
+  if(heroPhotoWrap){
+    heroPhotoWrap.style.transform = `translateY(${Math.min(y * 0.08, 120)}px) rotate(-1deg)`;
+  }
+  if(heroHeadline){
+    heroHeadline.style.transform = `translateY(${Math.min(y * 0.065, 70)}px)`;
+  }
+  if(heroEyebrow){
+    heroEyebrow.style.transform = `translateY(${Math.min(y * 0.08, 90)}px)`;
+  }
 });
 
 /* ===== THEME ===== */
