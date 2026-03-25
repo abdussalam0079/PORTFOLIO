@@ -54,6 +54,11 @@ body{
   overflow-x:hidden;
   cursor:none;
   transition:background .5s,color .5s;
+  -webkit-font-smoothing:antialiased;
+}
+@media(hover:none){
+  body{cursor:auto}
+  #cur,#cur-ring{display:none}
 }
 
 /* ============ CURSOR ============ */
@@ -208,8 +213,9 @@ nav.scrolled{
   flex:1;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  padding:4rem 2.5rem 2rem;
+  padding:6rem 2.5rem 2rem;
   position:relative;
+  gap:1.5rem;
 }
 .hero-eyebrow{
   font-family:'DM Mono',monospace;
@@ -263,7 +269,7 @@ nav.scrolled{
   aspect-ratio: 3 / 4;
 }
 .hero-photo{
-  width:120%;
+  width:100%;
   border-radius:12px 12px 0 0;
   display:block;
   object-fit:cover;
@@ -655,84 +661,134 @@ nav.scrolled{
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
+/* ============ HAMBURGER ============ */
+.hamburger{
+  display:none;flex-direction:column;gap:5px;
+  background:none;border:none;cursor:pointer;padding:.4rem;
+  z-index:600;
+}
+.hamburger span{
+  display:block;width:22px;height:1.5px;
+  background:var(--fg);border-radius:2px;
+  transition:transform .3s,opacity .3s;
+}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+.mobile-menu{
+  display:none;position:fixed;inset:0;z-index:550;
+  background:var(--bg);flex-direction:column;
+  align-items:center;justify-content:center;gap:2.5rem;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease;
+}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mobile-menu a{
+  font-family:'Unbounded',sans-serif;font-weight:700;
+  font-size:clamp(1.8rem,8vw,3rem);
+  text-transform:uppercase;letter-spacing:-.03em;
+  color:var(--fg);text-decoration:none;
+  transition:color .2s;
+}
+.mobile-menu a:hover{color:var(--accent)}
+
 /* ============ RESPONSIVE ============ */
 @media(max-width:900px){
   .about-grid{grid-template-columns:1fr}
   .project-row{grid-template-columns:1fr auto}
   .project-meta{display:none}
   .extras-grid{grid-template-columns:1fr 1fr}
-  .skills-grid{grid-template-columns:1fr}
-  .skill-group:nth-child(2n){border-right:1px solid var(--border)}
-  .skill-group:nth-last-child(-n+2){border-bottom:1px solid var(--border)}
+  .skills-grid{grid-template-columns:1fr 1fr}
+  .skill-group:nth-child(2n){border-right:none}
+  .skill-group:nth-last-child(-n+2){border-bottom:none}
   .skill-group:last-child{border-bottom:none}
   .hero-sub{flex-direction:column;gap:1.5rem}
-  .hero-social-list{align-items:flex-start}
+  .hero-social-list{align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:.8rem}
   .section-header{flex-direction:column;gap:1.5rem;align-items:flex-start}
   .section-header .btn{align-self:stretch;text-align:center}
   .contact-big{font-size:clamp(2rem,8vw,4rem)}
-  .contact-links-row{flex-direction:column;gap:1rem}
+  .contact-links-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
   .contact-link-btn{justify-content:center}
   .stats-grid{grid-template-columns:1fr 1fr}
 }
-@media(max-width:600px){
-  .section-wrap{padding:4rem 1.2rem}
-  nav{padding:1rem 1.2rem}
+@media(max-width:768px){
+  .hamburger{display:flex}
+  .mobile-menu{display:flex}
   .nav-links{display:none}
+}
+@media(max-width:600px){
+  .section-wrap{padding:4rem 1.4rem}
+  nav{padding:1rem 1.4rem}
   .extras-grid{grid-template-columns:1fr}
-  .hero-headline{font-size:clamp(2.5rem,12vw,5rem)}
-  .hero-photo-wrap{width:150px}
-  .hero-photo,.hero-photo-placeholder{height:200px}
-  .hero-eyebrow{font-size:.5rem;padding:0 1.2rem;text-align:center}
-  .hero-sub{padding:2rem 1.2rem}
-  .hero-desc-text{max-width:none}
-  .hero-social-list{align-items:center}
-  .hero-social-link{font-size:.55rem}
+  /* Hero */
+  .hero-top{padding:5rem 1.4rem 2rem;gap:1.5rem}
+  .hero-headline{font-size:clamp(2.8rem,11vw,5rem)}
+  .hero-photo-wrap{width:200px;transform:none}
+  .hero-photo{width:100%;border-radius:16px 16px 0 0}
+  .hero-photo-placeholder{height:auto;aspect-ratio:3/4}
+  .hero-eyebrow{font-size:.55rem;text-align:center;justify-content:center}
+  .hero-sub{padding:2rem 1.4rem;gap:2rem}
+  .hero-desc-text{max-width:none;font-size:.85rem}
+  .hero-social-list{flex-direction:row;flex-wrap:wrap;gap:.6rem;align-items:flex-start}
+  .hero-social-link{font-size:.6rem;padding:.4rem .8rem;border:1px solid var(--border2);border-radius:100px}
+  .hero-social-link::after{display:none}
+  .hero-ctas{flex-direction:row;flex-wrap:wrap}
+  .hero-ctas .btn{flex:1;justify-content:center;min-width:120px}
+  /* Marquee */
   .marquee-item{font-size:.6rem;padding:0 1.2rem}
-  .project-row{grid-template-columns:1fr;padding:1.5rem 0}
-  .project-left{gap:1rem}
-  .project-name{font-size:clamp(.8rem,3vw,1.1rem)}
-  .project-tagline{font-size:.7rem}
-  .project-arrow-wrap{display:none}
+  /* Projects */
+  .project-row{grid-template-columns:1fr auto;padding:1.4rem 0;gap:1rem}
+  .project-row:hover{padding-left:0}
+  .project-left{gap:.9rem}
+  .project-name{font-size:clamp(.85rem,3.5vw,1.1rem)}
+  .project-tagline{font-size:.68rem}
+  .project-arrow-wrap{display:flex}
+  /* Skills */
   .skills-grid{grid-template-columns:1fr}
   .skill-group{padding:1.5rem}
-  .skill-pills{gap:.3rem}
-  .skill-pill{font-size:.55rem;padding:.25rem .6rem}
+  .skill-pills{gap:.35rem}
+  .skill-pill{font-size:.58rem;padding:.28rem .65rem}
+  /* Extras */
   .extra-card{padding:1.5rem}
   .extra-card-title{font-size:.85rem}
-  .extra-card-sub{font-size:.65rem;line-height:1.6}
-  .extra-tags{margin-top:.8rem}
+  .extra-card-sub{font-size:.68rem;line-height:1.65}
+  /* Contact */
+  .contact-links-row{grid-template-columns:1fr 1fr}
   .contact-footer{flex-direction:column;gap:.5rem;text-align:center;padding-top:1.5rem}
-  .theme-panel{right:1.2rem}
-  .nav-right{gap:.8rem}
-  .nav-status{font-size:.55rem}
-  .theme-toggle-btn{font-size:.55rem;padding:.3rem .7rem}
+  /* Nav */
+  .theme-panel{right:1.4rem}
+  .nav-right{gap:.6rem}
+  .nav-status{display:none}
+  .theme-toggle-btn{font-size:.55rem;padding:.35rem .7rem}
 }
 @media(max-width:480px){
-  .hero-top{padding:3rem 1rem 1rem}
-  .hero-photo-wrap{width:120px}
-  .hero-photo,.hero-photo-placeholder{height:160px}
-  .hero-photo-glow{width:160px;height:80px}
-  .hero-photo-label{font-size:.45rem}
-  .hero-headline{font-size:clamp(2rem,14vw,4rem)}
   .section-wrap{padding:3rem 1rem}
-  nav{padding:.8rem 1rem}
+  nav{padding:.85rem 1rem}
   .nav-logo{font-size:.6rem}
   .nav-logo span{width:24px;height:24px;font-size:.45rem}
-  .stats-grid{grid-template-columns:1fr}
+  .hero-top{padding:4.5rem 1rem 1.5rem}
+  .hero-headline{font-size:clamp(2.2rem,13vw,3.8rem)}
+  .hero-photo-wrap{width:170px}
+  .hero-photo-glow{width:140px;height:70px}
+  .hero-photo-label{font-size:.45rem}
+  .hero-sub{padding:1.8rem 1rem}
+  .stats-grid{grid-template-columns:1fr 1fr}
   .stat-item{padding:1.2rem 1rem}
   .stat-num{font-size:2rem}
-  .stat-label{font-size:.6rem}
-  .about-big-text{font-size:clamp(.9rem,3vw,1.2rem)}
-  .about-body{font-size:.75rem}
+  .stat-label{font-size:.58rem}
+  .about-big-text{font-size:clamp(.9rem,3.5vw,1.2rem)}
+  .about-body{font-size:.78rem}
   .building-line{font-size:.55rem}
   .about-tags{gap:.4rem}
   .about-tag{font-size:.55rem;padding:.25rem .7rem}
-  .project-num{font-size:.55rem}
-  .project-icon-box{width:36px;height:36px;font-size:1rem}
-  .skill-group-name{font-size:.55rem}
+  .project-num{display:none}
+  .project-icon-box{width:38px;height:38px;font-size:1.1rem}
+  .skill-group-name{font-size:.58rem}
   .extra-card-icon{font-size:1.8rem}
-  .contact-big{font-size:clamp(1.8rem,10vw,3.5rem)}
-  .contact-link-btn{font-size:.6rem;padding:.7rem 1.2rem}
+  .contact-big{font-size:clamp(1.8rem,10vw,3rem)}
+  .contact-link-btn{font-size:.6rem;padding:.75rem 1rem}
+  .contact-links-row{grid-template-columns:1fr 1fr;gap:.6rem}
 }
 </style>
 </head>
@@ -769,8 +825,19 @@ nav.scrolled{
   <div class="nav-right">
     <div class="nav-status"><div class="nav-dot"></div>Available for work</div>
     <button class="theme-toggle-btn" id="themeToggle">🎨 Theme</button>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" class="mobile-nav-link">About</a>
+  <a href="#projects" class="mobile-nav-link">Work</a>
+  <a href="#skills" class="mobile-nav-link">Skills</a>
+  <a href="#contact" class="mobile-nav-link">Contact</a>
+</div>
 
 <!-- THEME PANEL -->
 <div class="theme-panel" id="themePanel">
@@ -1203,6 +1270,55 @@ nav.scrolled{
 </section>
 
 <script>
+/* ===== SMOOTH SCROLL (cross-platform incl. iOS) ===== */
+function smoothScrollTo(target){
+  const el=document.querySelector(target);
+  if(!el)return;
+  const navH=document.getElementById('nav').offsetHeight;
+  const top=el.getBoundingClientRect().top+window.pageYOffset-navH;
+  if('scrollBehavior' in document.documentElement.style){
+    window.scrollTo({top,behavior:'smooth'});
+  } else {
+    // fallback for older iOS
+    const start=window.pageYOffset;
+    const dist=top-start;
+    const dur=600;
+    let startTime=null;
+    function step(ts){
+      if(!startTime)startTime=ts;
+      const p=Math.min((ts-startTime)/dur,1);
+      const ease=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+      window.scrollTo(0,start+dist*ease);
+      if(p<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+}
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const href=a.getAttribute('href');
+    if(href==='#'||!document.querySelector(href))return;
+    e.preventDefault();
+    smoothScrollTo(href);
+  });
+});
+
+/* ===== MOBILE MENU ===== */
+const hamburger=document.getElementById('hamburger');
+const mobileMenu=document.getElementById('mobileMenu');
+hamburger.addEventListener('click',()=>{
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow=mobileMenu.classList.contains('open')?'hidden':'';
+});
+document.querySelectorAll('.mobile-nav-link').forEach(a=>{
+  a.addEventListener('click',()=>{
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow='';
+  });
+});
+
 /* ===== CURSOR ===== */
 const cur=document.getElementById('cur');
 const ring=document.getElementById('cur-ring');
