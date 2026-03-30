@@ -41,7 +41,9 @@
 
 /* ============ BASE ============ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
+html{scroll-behavior:smooth;font-size:16px;text-size-adjust:100%;-webkit-text-size-adjust:100%}
+img{max-width:100%;height:auto;display:block}
+button,input,textarea,select{font:inherit}
 body{
   background:var(--bg);color:var(--fg);
   font-family:'Inter','DM Sans',sans-serif;
@@ -52,7 +54,8 @@ body{
 }
 @media(hover:none){
   body{cursor:auto}
-  #cur,#cur-ring{display:none}
+  #cur,#cur-ring,.project-hover-img{display:none}
+  .btn,.theme-toggle-btn,.contact-link-btn,.hamburger{cursor:pointer}
 }
 
 /* ============ CURSOR ============ */
@@ -146,6 +149,7 @@ nav{
 }
 nav.scrolled{
   background:rgba(5,5,5,.78);
+  -webkit-backdrop-filter:blur(16px);
   backdrop-filter:blur(16px);
   border-bottom:1px solid var(--border);
 }
@@ -234,6 +238,7 @@ nav.scrolled{
   white-space:nowrap;
   display:flex;
   pointer-events:none;
+  -webkit-user-select:none;
   user-select:none;
   z-index:0;
   opacity:0;
@@ -731,100 +736,111 @@ nav.scrolled{
 
 /* ============ RESPONSIVE ============ */
 @media(max-width:900px){
-  .about-grid{grid-template-columns:1fr}
-  .project-row{grid-template-columns:1fr auto}
-  .project-meta{display:none}
+  .section-wrap{padding:4.5rem 1.5rem}
+  .about-grid{grid-template-columns:1fr;gap:2rem}
+  .project-row{grid-template-columns:1fr;align-items:start;gap:1rem}
+  .project-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:1rem;
+    grid-column:1 / -1;
+    padding-left:3.5rem;
+  }
+  .project-meta > div{flex:1 1 200px}
+  .project-arrow-wrap{justify-content:flex-start}
   .extras-grid{grid-template-columns:1fr 1fr}
   .skills-grid{grid-template-columns:1fr 1fr}
   .skill-group:nth-child(2n){border-right:none}
   .skill-group:nth-last-child(-n+2){border-bottom:none}
   .skill-group:last-child{border-bottom:none}
-  .hero-sub{flex-direction:column;gap:1.5rem}
-  .hero-social-list{align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:.8rem}
-  .section-header{flex-direction:column;gap:1.5rem;align-items:flex-start}
+  .section-header{flex-direction:column;gap:1.5rem;align-items:flex-start;margin-bottom:2.5rem}
   .section-header .btn{align-self:stretch;text-align:center}
+  .hero{padding:6rem 1.5rem 2rem}
+  .hero-bottom{grid-template-columns:1fr;justify-items:center;align-items:center;gap:1.1rem;text-align:center}
+  .hero-left-anim,.hero-right-anim{width:100%}
+  .hero-right{text-align:center;align-items:center;gap:1rem}
+  .hero-status{justify-content:center}
+  .hero-scroll{display:none}
+  .hero-role-stack{position:relative;top:auto;left:auto;transform:none;text-align:center;margin:1rem auto 0;max-width:32rem}
+  .hero-role-copy{line-height:1.8;letter-spacing:.16em}
+  .hero-role-line{margin:.75rem auto 0}
+  .hero-location{position:relative;bottom:auto;left:auto;margin-top:1rem;text-align:center}
   .contact-big{font-size:clamp(2rem,8vw,4rem)}
-  .contact-links-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-  .contact-link-btn{justify-content:center}
-  .stats-grid{grid-template-columns:1fr 1fr}
+  .contact-links-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+  .contact-link-btn{justify-content:center;min-width:0}
 }
 @media(max-width:768px){
   .hamburger{display:flex}
-  .mobile-menu{display:flex}
+  .mobile-menu{display:flex;padding:6rem 1.5rem 2rem;text-align:center}
   .nav-links{display:none}
 }
 @media(max-width:600px){
-  .section-wrap{padding:4rem 1.4rem}
-  nav{padding:1rem 1.4rem}
-  .extras-grid{grid-template-columns:1fr}
-  /* Hero */
-  .hero-top{padding:5rem 1.4rem 2rem;gap:1.5rem}
-  .hero-headline{font-size:clamp(2.8rem,11vw,5rem)}
-  .hero-photo-wrap{width:200px;transform:none}
-  .hero-photo{width:100%;border-radius:16px 16px 0 0}
-  .hero-photo-placeholder{height:auto;aspect-ratio:3/4}
-  .hero-eyebrow{font-size:.55rem;text-align:center;justify-content:center}
-  .hero-sub{padding:2rem 1.4rem;gap:2rem}
-  .hero-desc-text{max-width:none;font-size:.85rem}
-  .hero-social-list{flex-direction:row;flex-wrap:wrap;gap:.6rem;align-items:flex-start}
-  .hero-social-link{font-size:.6rem;padding:.4rem .8rem;border:1px solid var(--border2);border-radius:100px}
-  .hero-social-link::after{display:none}
-  .hero-ctas{flex-direction:row;flex-wrap:wrap}
-  .hero-ctas .btn{flex:1;justify-content:center;min-width:120px}
-  /* Marquee */
+  .section-wrap{padding:4rem 1.1rem}
+  nav{padding:1rem 1.1rem;gap:.75rem}
+  .nav-logo{font-size:.9rem}
+  .nav-right{gap:.6rem}
+  .nav-status,.theme-name{display:none}
+  .theme-toggle-btn{width:40px;height:22px;padding:0}
+  .btn{width:100%;justify-content:center}
+  .extras-grid,.skills-grid,.contact-links-row{grid-template-columns:1fr}
+  .hero{padding:5.8rem 1.1rem 1.8rem}
+  .hero-bottom{gap:1rem}
+  .hero-name{font-size:clamp(3rem,15vw,4.6rem);line-height:.88}
+  .hero-center{gap:.85rem}
+  .hero-center-img{width:min(62vw,210px)}
+  .hero-status{padding:.45rem .8rem;font-size:.58rem;letter-spacing:.1em}
+  .hero-role-copy{font-size:.58rem;letter-spacing:.14em;margin-bottom:.65rem}
+  .hero-role-line{height:40px}
+  .hero-location{font-size:.56rem;line-height:1.7}
   .marquee-item{font-size:.6rem;padding:0 1.2rem}
-  /* Projects */
-  .project-row{grid-template-columns:1fr auto;padding:1.4rem 0;gap:1rem}
+  .project-row{padding:1.2rem 0;gap:.9rem}
   .project-row:hover{padding-left:0}
-  .project-left{gap:.9rem}
+  .project-left{align-items:flex-start;gap:.8rem}
+  .project-meta{padding-left:0;gap:.75rem}
   .project-name{font-size:clamp(.85rem,3.5vw,1.1rem)}
   .project-tagline{font-size:.68rem}
-  .project-arrow-wrap{display:flex}
-  /* Skills */
-  .skills-grid{grid-template-columns:1fr}
   .skill-group{padding:1.5rem}
   .skill-pills{gap:.35rem}
   .skill-pill{font-size:.58rem;padding:.28rem .65rem}
-  /* Extras */
   .extra-card{padding:1.5rem}
   .extra-card-title{font-size:.85rem}
   .extra-card-sub{font-size:.68rem;line-height:1.65}
-  /* Contact */
-  .contact-links-row{grid-template-columns:1fr 1fr}
   .contact-footer{flex-direction:column;gap:.5rem;text-align:center;padding-top:1.5rem}
-  /* Nav */
-  .nav-right{gap:.6rem}
-  .nav-status{display:none}
-  .theme-name{display:none}
-  .theme-toggle-btn{width:40px;height:22px;padding:0}
 }
 @media(max-width:480px){
   .section-wrap{padding:3rem 1rem}
   nav{padding:.85rem 1rem}
   .nav-logo{font-size:.75rem}
-  .nav-logo span{width:auto;height:auto;font-size:inherit}
-  .hero-top{padding:4.5rem 1rem 1.5rem}
-  .hero-headline{font-size:clamp(2.2rem,13vw,3.8rem)}
-  .hero-photo-wrap{width:170px}
-  .hero-photo-glow{width:140px;height:70px}
-  .hero-photo-label{font-size:.45rem}
-  .hero-sub{padding:1.8rem 1rem}
-  .stats-grid{grid-template-columns:1fr 1fr}
+  .loader-count{right:1rem;bottom:1rem}
+  .mobile-menu{padding:5.5rem 1rem 2rem}
+  .mobile-menu a{font-size:clamp(1.4rem,9vw,2.4rem)}
+  .hero{padding:5.3rem 1rem 1.75rem}
+  .hero-name{font-size:clamp(2.35rem,14vw,3.7rem)}
+  .hero-center-img{width:min(68vw,180px)}
+  .hero-status{width:100%}
+  .hero-role-copy{font-size:.54rem;letter-spacing:.1em}
+  .stats-grid{grid-template-columns:1fr}
   .stat-item{padding:1.2rem 1rem}
   .stat-num{font-size:2rem}
   .stat-label{font-size:.58rem}
-  .about-big-text{font-size:clamp(.9rem,3.5vw,1.2rem)}
+  .about-big-text{font-size:clamp(.9rem,4.2vw,1.15rem)}
   .about-body{font-size:.78rem}
-  .building-line{font-size:.55rem}
+  .building-line{font-size:.55rem;line-height:1.8}
   .about-tags{gap:.4rem}
   .about-tag{font-size:.55rem;padding:.25rem .7rem}
   .project-num{display:none}
   .project-icon-box{width:38px;height:38px;font-size:1.1rem}
+  .proj-tag{font-size:.52rem}
   .skill-group-name{font-size:.58rem}
   .extra-card-icon{font-size:1.8rem}
   .contact-big{font-size:clamp(1.8rem,10vw,3rem)}
   .contact-link-btn{font-size:.6rem;padding:.75rem 1rem}
-  .contact-links-row{grid-template-columns:1fr 1fr;gap:.6rem}
+}
+@media(max-width:360px){
+  .hero-name{font-size:2.1rem}
+  .hero-role-copy{letter-spacing:.08em}
+  .project-left{gap:.65rem}
+  .contact-big{font-size:1.6rem}
 }
 </style>
 </head>
@@ -973,7 +989,7 @@ nav.scrolled{
       <div class="section-eyebrow">About</div>
       <div class="section-title">The Dev<br/>Behind the Code.</div>
     </div>
-    <a href="https://github.com/abdussalam0079" target="_blank" class="btn btn-outline" style="align-self:flex-end">
+    <a href="https://github.com/abdussalam0079" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="align-self:flex-end">
       GitHub ↗
     </a>
   </div>
@@ -1022,7 +1038,7 @@ nav.scrolled{
       <div class="section-eyebrow">⤵ Selected Work</div>
       <div class="section-title">Selected Work.</div>
     </div>
-    <a href="https://github.com/abdussalam0079" target="_blank" class="btn btn-outline" style="align-self:flex-end">
+    <a href="https://github.com/abdussalam0079" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="align-self:flex-end">
       All on GitHub ↗
     </a>
   </div>
@@ -1259,7 +1275,7 @@ nav.scrolled{
     </div>
   </div>
   <div class="extras-grid sr">
-    <a href="https://github.com/abdussalam0079" target="_blank" class="extra-card">
+    <a href="https://github.com/abdussalam0079" target="_blank" rel="noopener noreferrer" class="extra-card">
       <div class="extra-card-icon">⌨️</div>
       <div class="extra-card-title">GitHub Repos</div>
       <div class="extra-card-sub">All my open-source work, experiments, and side projects in one place.</div>
@@ -1279,7 +1295,7 @@ nav.scrolled{
         <span class="extra-tag">remote</span>
       </div>
     </a>
-    <a href="https://linkedin.com/in/abdus-salam-4b8305364" target="_blank" class="extra-card">
+    <a href="https://linkedin.com/in/abdus-salam-4b8305364" target="_blank" rel="noopener noreferrer" class="extra-card">
       <div class="extra-card-icon">💼</div>
       <div class="extra-card-title">LinkedIn</div>
       <div class="extra-card-sub">Connect professionally — let's grow networks and share opportunities.</div>
@@ -1324,8 +1340,8 @@ nav.scrolled{
   <div class="contact-links-row sr">
     <a href="mailto:ab.ist.edu.pk@gmail.com" class="contact-link-btn">✉ Email Me</a>
     <a href="tel:+923155266239" class="contact-link-btn">📞 Call Me</a>
-    <a href="https://github.com/abdussalam0079" target="_blank" class="contact-link-btn">⌨ GitHub</a>
-    <a href="https://linkedin.com/in/abdus-salam-4b8305364" target="_blank" class="contact-link-btn">💼 LinkedIn</a>
+    <a href="https://github.com/abdussalam0079" target="_blank" rel="noopener noreferrer" class="contact-link-btn">⌨ GitHub</a>
+    <a href="https://linkedin.com/in/abdus-salam-4b8305364" target="_blank" rel="noopener noreferrer" class="contact-link-btn">💼 LinkedIn</a>
   </div>
   <div class="contact-footer sr">
     <span>© 2024 Abdus Salam</span>
@@ -1460,7 +1476,7 @@ themeBtn.addEventListener('click',()=>{
   if(themeLabel) themeLabel.textContent=next==='jungle' ? 'Jungle' : 'Moon';
 });
 const yearNow=document.getElementById('yearNow');
-if(yearNow) yearNow.textContent='2025';
+if(yearNow) yearNow.textContent=String(new Date().getFullYear());
 
 /* ===== FRAME SCROLL BETWEEN SECTIONS ===== */
 const frameSections=document.querySelectorAll('.scroll-frame');
