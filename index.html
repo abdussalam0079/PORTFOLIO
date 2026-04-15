@@ -91,9 +91,6 @@ body{
   min-height:100%;
   overscroll-behavior-y:auto;
   cursor:none;
-  /* FIX: removed transform:translateY(8px) — a transform on <body> creates a
-     new scroll container in many browsers, locking the page to the hero.
-     Fade-in now uses opacity only. */
   opacity:0;
   transition:background .5s,color .5s,opacity .7s cubic-bezier(.22,1,.36,1);
   -webkit-font-smoothing:antialiased;
@@ -101,7 +98,6 @@ body{
   padding-left:env(safe-area-inset-left);
   padding-right:env(safe-area-inset-right);
 }
-/* FIX: removed transform:translateY(0) from body.ready */
 body.ready{opacity:1}
 .ambient-bg{
   position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
@@ -151,32 +147,103 @@ body.ready{opacity:1}
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   overflow:hidden;
-  transition:opacity .8s ease,transform .8s ease;
+  transition:opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
 }
-#loader{display:none!important}
-#loader.exit{opacity:0;transform:translateY(-105%);pointer-events:none}
+#loader.exit{
+  opacity:0;
+  transform:translateY(-105%);
+  pointer-events:none;
+}
+
+/* ---- scrolling name track ---- */
 .loader-shell{
   width:100%;
   overflow:hidden;
   padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:.6rem;
 }
 .loader-track{
   display:flex;
   white-space:nowrap;
-  animation:preloaderScroll 9s linear infinite;
+  animation:preloaderScroll 7s linear infinite;
+}
+.loader-track.reverse{
+  animation-direction:reverse;
+  animation-duration:9s;
 }
 .loader-word{
   font-family:'Antonio','Unbounded',sans-serif;
   font-weight:700;
-  font-size:clamp(1.8rem,7vw,7rem);
+  font-size:clamp(2.5rem,9vw,9rem);
   letter-spacing:-.03em;
   text-transform:uppercase;
   line-height:1;
-  padding:0 clamp(.5rem,.8vw,1.2rem);
-  opacity:.78;
+  padding:0 clamp(.6rem,1vw,1.4rem);
   flex-shrink:0;
+  color:var(--fg);
+  opacity:.12;
+  transition:opacity .3s;
 }
-.loader-word.accent{color:var(--accent)}
+.loader-word.accent{
+  color:var(--accent);
+  opacity:1;
+  font-weight:900;
+  text-shadow:0 0 40px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.loader-word.dim{opacity:.06}
+
+/* ---- centre name reveal ---- */
+.loader-center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:.8rem;
+  pointer-events:none;
+  z-index:2;
+}
+.loader-hero-name{
+  font-family:'Antonio','Unbounded',sans-serif;
+  font-weight:900;
+  font-size:clamp(3rem,10vw,11rem);
+  letter-spacing:-.05em;
+  text-transform:uppercase;
+  line-height:.88;
+  color:var(--fg);
+  text-align:center;
+  overflow:hidden;
+}
+.loader-hero-name .l-first{
+  display:block;
+  clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
+  animation:slideUp .9s cubic-bezier(.22,1,.36,1) .2s both;
+}
+.loader-hero-name .l-last{
+  display:block;
+  clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
+  animation:slideUp .9s cubic-bezier(.22,1,.36,1) .38s both;
+  color:var(--accent);
+}
+@keyframes slideUp{
+  from{transform:translateY(110%);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+.loader-tagline{
+  font-family:'DM Mono',monospace;
+  font-size:clamp(.55rem,.4rem + .5vw,.72rem);
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  color:var(--fg2);
+  opacity:0;
+  animation:fadeIn .7s ease .8s both;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---- progress bar ---- */
 .loader-bar-track{
   position:absolute;
   left:0;right:0;bottom:0;
@@ -187,7 +254,8 @@ body.ready{opacity:1}
   position:absolute;
   left:0;bottom:0;
   height:2px;
-  background:var(--accent);
+  background:linear-gradient(90deg, var(--accent), var(--accent-dark));
+  box-shadow:0 0 12px color-mix(in srgb, var(--accent) 70%, transparent);
   width:0%;
   transition:width .18s ease;
 }
@@ -1092,25 +1160,55 @@ body.menu-open{overflow:hidden!important}
 
 <!-- ===== LOADER ===== -->
 <div id="loader">
-  <div class="loader-shell">
+  <!-- Background scrolling tracks -->
+  <div class="loader-shell" aria-hidden="true">
     <div class="loader-track">
-      <span class="loader-word">Abdus Salam</span>
+      <span class="loader-word dim">ABDUS</span>
       <span class="loader-word accent">✦</span>
-      <span class="loader-word">Creative Developer</span>
+      <span class="loader-word dim">SALAM</span>
       <span class="loader-word accent">✦</span>
-      <span class="loader-word">Android Builder</span>
+      <span class="loader-word dim">CREATIVE</span>
       <span class="loader-word accent">✦</span>
-      <span class="loader-word">Frontend Engineer</span>
+      <span class="loader-word dim">DEVELOPER</span>
       <span class="loader-word accent">✦</span>
-      <span class="loader-word">Abdus Salam</span>
+      <span class="loader-word dim">ABDUS</span>
       <span class="loader-word accent">✦</span>
-      <span class="loader-word">Creative Developer</span>
+      <span class="loader-word dim">SALAM</span>
       <span class="loader-word accent">✦</span>
-      <span class="loader-word">Android Builder</span>
+      <span class="loader-word dim">CREATIVE</span>
       <span class="loader-word accent">✦</span>
-      <span class="loader-word">Frontend Engineer</span>
+      <span class="loader-word dim">DEVELOPER</span>
+      <span class="loader-word accent">✦</span>
+    </div>
+    <div class="loader-track reverse">
+      <span class="loader-word dim">ANDROID</span>
+      <span class="loader-word accent">✦</span>
+      <span class="loader-word dim">BUILDER</span>
+      <span class="loader-word accent">✦</span>
+      <span class="loader-word dim">FRONTEND</span>
+      <span class="loader-word accent">✦</span>
+      <span class="loader-word dim">ENGINEER</span>
+      <span class="loader-word accent">✦</span>
+      <span class="loader-word dim">ANDROID</span>
+      <span class="loader-word accent">✦</span>
+      <span class="loader-word dim">BUILDER</span>
+      <span class="loader-word accent">✦</span>
+      <span class="loader-word dim">FRONTEND</span>
+      <span class="loader-word accent">✦</span>
+      <span class="loader-word dim">ENGINEER</span>
+      <span class="loader-word accent">✦</span>
     </div>
   </div>
+
+  <!-- Centre name reveal -->
+  <div class="loader-center">
+    <div class="loader-hero-name">
+      <span class="l-first">ABDUS</span>
+      <span class="l-last">SALAM</span>
+    </div>
+    <div class="loader-tagline">Creative Developer &nbsp;·&nbsp; Pakistan</div>
+  </div>
+
   <div class="loader-bar-track"></div>
   <div class="loader-bar" id="loaderBar"></div>
   <div class="loader-count"><span id="loaderCount">0</span> %</div>
@@ -1633,30 +1731,32 @@ if(cur&&ring){
 const bar=document.getElementById('loaderBar');
 const loaderCount=document.getElementById('loaderCount');
 const loaderEl=document.getElementById('loader');
-let loadVal=0;
-const loadTimer=setInterval(()=>{
-  loadVal+=Math.random()*12+4;
-  if(loadVal>=100){
-    loadVal=100;
-    clearInterval(loadTimer);
-    setTimeout(()=>{
-      if(loaderEl){
-        loaderEl.classList.add('exit');
-        loaderEl.style.pointerEvents='none';
-      }
-    },350);
+
+function dismissLoader(){
+  if(!loaderEl||loaderEl.classList.contains('exit'))return;
+  loaderEl.classList.add('exit');
+  loaderEl.style.pointerEvents='none';
+}
+
+let loadProgress = 0;
+const startTime = performance.now();
+function animateLoaderProgress(currentTime) {
+  const elapsed = currentTime - startTime;
+  loadProgress = Math.min((elapsed / 2000) * 100, 100); // Linear 0-100% over 2s (2000ms)
+  
+  if (bar) bar.style.width = `${loadProgress}%`;
+  if (loaderCount) loaderCount.textContent = Math.floor(loadProgress);
+  
+  if (loadProgress < 100) {
+    requestAnimationFrame(animateLoaderProgress);
+  } else {
+    // Exactly at 5s, dismiss loader
+    setTimeout(dismissLoader, 0);
   }
-  bar.style.width=`${loadVal}%`;
-  if(loaderCount) loaderCount.textContent=Math.floor(loadVal);
-},60);
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
-    if(loaderEl){
-      loaderEl.classList.add('exit');
-      loaderEl.style.pointerEvents='none';
-    }
-  },1800);
-},{passive:true});
+}
+requestAnimationFrame(animateLoaderProgress);
+
+// Removed redundant window.load timeout (5s linear progress supersedes it)
 
 /* ===== HERO INTRO ===== */
 const heroCenter=document.getElementById('heroCenter');
