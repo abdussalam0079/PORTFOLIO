@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="moon">
+<html lang="en" data-theme="jungle">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
@@ -28,41 +28,6 @@
   --border2:rgba(255,255,255,0.12);
   --card:#0a0a0a;
   --loader-bg:#050505;
-}
-[data-theme="moon"]{
-  --bg:#f0ede6; --bg2:#ebe7df; --bg3:#ddd8cf;
-  --fg:#050505; --fg2:#353535; --fg3:#9f988f;
-  --accent:#050505; --accent-dark:#222;
-  --border:rgba(0,0,0,0.08);
-  --border2:rgba(0,0,0,0.14);
-  --card:#f7f3ec;
-  --loader-bg:#f0ede6;
-}
-[data-theme="moon"] .nav-status,
-[data-theme="moon"] .theme-name{opacity:.62}
-[data-theme="moon"] .hero-role-copy{opacity:.5}
-[data-theme="moon"] .hero-location,
-[data-theme="moon"] .hero-scroll{opacity:.5}
-[data-theme="moon"] .marquee-item,
-[data-theme="moon"] .about-body,
-[data-theme="moon"] .building-line,
-[data-theme="moon"] .project-tagline,
-[data-theme="moon"] .project-meta-label,
-[data-theme="moon"] .contact-footer{color:#2e2e2e}
-[data-theme="moon"] .proj-tag,
-[data-theme="moon"] .about-tag,
-[data-theme="moon"] .skill-pill{
-  color:#1f1f1f;
-  border-color:rgba(0,0,0,.22);
-}
-[data-theme="light"]{
-  --bg:#ffffff; --bg2:#f7f7f7; --bg3:#ececec;
-  --fg:#111111; --fg2:#5a5a5a; --fg3:#d8d8d8;
-  --accent:#2f7cf6; --accent-dark:#1f5ab2;
-  --border:rgba(0,0,0,0.08);
-  --border2:rgba(0,0,0,0.14);
-  --card:#ffffff;
-  --loader-bg:#ffffff;
 }
 
 /* ============ BASE ============ */
@@ -122,7 +87,12 @@ body.ready{opacity:1}
   .btn,.theme-toggle-btn,.contact-link-btn,.hamburger{cursor:pointer}
 }
 
-/* ============ CURSOR ============ */
+/* ===== PIXEL TRAIL CURSOR ===== */
+#pixelTrail{
+  position:fixed;inset:0;
+  pointer-events:none;
+  z-index:99999;
+}
 #cur{
   position:fixed;z-index:10000;width:8px;height:8px;
   background:var(--accent);border-radius:50%;
@@ -419,6 +389,17 @@ body.menu-open{overflow:hidden!important}
   padding:0 clamp(1rem,3vw,2.5rem) clamp(1.5rem,3vw,3rem);
   position:relative;
   overflow:hidden;
+}
+.hero-strands-host{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.hero > *:not(.hero-strands-host){
+  position:relative;
+  z-index:2;
 }
 .theme-chooser{
   position:absolute;
@@ -836,6 +817,32 @@ body.menu-open{overflow:hidden!important}
 }
 .project-row:hover .project-arrow-btn{background:var(--accent);color:#000;border-color:var(--accent);transform:rotate(45deg)}
 
+/* ============ LASER FLOW ============ */
+.laser-flow-host{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  min-height:100%;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.laser-flow-host canvas{
+  position:absolute;
+  top:0;left:0;
+  display:block;
+}
+.skills-section{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.skills-section .section-header,
+.skills-section .skills-grid{
+  position:relative;
+  z-index:2;
+}
+
 /* ============ SKILLS ============ */
 .skills-section{background:var(--bg2);transition:background .5s}
 .skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:20px;overflow:hidden}
@@ -1149,6 +1156,7 @@ body.menu-open{overflow:hidden!important}
   <div class="orb two"></div>
   <div class="orb three"></div>
 </div>
+<canvas id="pixelTrail"></canvas>
 <div class="noise-overlay"></div>
 <div id="cur"></div>
 <div id="cur-ring"></div>
@@ -1246,11 +1254,10 @@ body.menu-open{overflow:hidden!important}
 
 <!-- ===== HERO ===== -->
 <section class="hero scroll-frame" id="home">
+  <div class="hero-strands-host" id="heroStrandsHost"></div>
   <div class="theme-chooser sr">
-    <span class="theme-chooser-label">Choose your theme</span>
-    <button class="theme-chip" data-set-theme="jungle" aria-label="Set jungle theme">Jungle</button>
-    <button class="theme-chip" data-set-theme="moon" aria-label="Set moon theme">Moon</button>
-    <button class="theme-chip" data-set-theme="light" aria-label="Set light theme">Light</button>
+    <span class="theme-chooser-label">Theme</span>
+    <button class="theme-chip active" data-set-theme="jungle" aria-label="Set jungle theme">Green</button>
   </div>
   <div class="hero-marquee-bg" id="heroMarquee" aria-hidden="true" style="opacity:0;">
     <div class="hero-marquee-inner">
@@ -1523,6 +1530,7 @@ body.menu-open{overflow:hidden!important}
 
 <!-- ===== SKILLS ===== -->
 <section class="skills-section section-wrap scroll-frame" id="products">
+  <div class="laser-flow-host" id="laserFlowHost"></div>
   <div class="section-header sr">
     <div>
       <div class="section-eyebrow">Products</div>
@@ -1831,20 +1839,17 @@ window.addEventListener('scroll',()=>{
 const themeBtn=document.getElementById('themeToggle');
 const themeLabel=document.getElementById('themeLabel');
 const themeChips=document.querySelectorAll('[data-set-theme]');
-const themes=['jungle','moon','light'];
+const themes=['jungle'];
 
 function applyTheme(next){
   document.documentElement.setAttribute('data-theme',next);
-  if(themeLabel) themeLabel.textContent=next.charAt(0).toUpperCase()+next.slice(1);
+  if(themeLabel) themeLabel.textContent='Green';
   themeChips.forEach(chip=>chip.classList.toggle('active',chip.dataset.setTheme===next));
   try{localStorage.setItem('portfolio-theme',next);}catch(_){}
 }
 
-themeBtn.addEventListener('click',()=>{
-  const current=document.documentElement.getAttribute('data-theme')||'jungle';
-  const next=themes[(themes.indexOf(current)+1)%themes.length];
-  applyTheme(next);
-});
+if(themeBtn){themeBtn.style.display='none';}
+if(themeLabel){themeLabel.textContent='Green';}
 
 themeChips.forEach(chip=>{
   chip.addEventListener('click',()=>applyTheme(chip.dataset.setTheme));
@@ -1998,6 +2003,439 @@ window.addEventListener('resize',()=>{
     document.body.classList.remove('menu-open');
   }
 },{passive:true});
+/* ===== LASER FLOW ===== */
+(function(){
+  const host=document.getElementById('laserFlowHost');
+  if(!host)return;
+  const canvas=document.createElement('canvas');
+  host.appendChild(canvas);
+
+  // Props
+  const CFG={
+    horizontalBeamOffset:0.0,
+    verticalBeamOffset:0.0,
+    horizontalSizing:0.5,
+    verticalSizing:2.0,
+    wispDensity:1,
+    wispSpeed:15.0,
+    wispIntensity:5.0,
+    flowSpeed:0.35,
+    flowStrength:0.25,
+    fogIntensity:0.45,
+    fogScale:0.3,
+    fogFallSpeed:0.6,
+    mouseTiltStrength:0.01,
+    decay:1.1,
+    falloffStart:1.2,
+    color:'#ccff00'
+  };
+
+  function hexRGB(h){
+    let c=h.trim().replace('#','');
+    if(c.length===3)c=c.split('').map(x=>x+x).join('');
+    const n=parseInt(c,16)||0xffffff;
+    return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255];
+  }
+
+  const VERT=`precision highp float;
+attribute vec3 position;
+void main(){gl_Position=vec4(position,1.0);}`;
+
+  const FRAG=`#ifdef GL_ES
+#extension GL_OES_standard_derivatives : enable
+#endif
+precision highp float;
+precision mediump int;
+uniform float iTime;
+uniform vec3 iResolution;
+uniform vec4 iMouse;
+uniform float uWispDensity;
+uniform float uTiltScale;
+uniform float uFlowTime;
+uniform float uFogTime;
+uniform float uBeamXFrac;
+uniform float uBeamYFrac;
+uniform float uFlowSpeed;
+uniform float uVLenFactor;
+uniform float uHLenFactor;
+uniform float uFogIntensity;
+uniform float uFogScale;
+uniform float uWSpeed;
+uniform float uWIntensity;
+uniform float uFlowStrength;
+uniform float uDecay;
+uniform float uFalloffStart;
+uniform float uFogFallSpeed;
+uniform vec3 uColor;
+uniform float uFade;
+#define PI 3.14159265359
+#define TWO_PI 6.28318530718
+#define EPS 1e-6
+#define DT_LOCAL 0.0038
+#define TAP_RADIUS 6
+#define R_H 150.0
+#define R_V 150.0
+#define FLARE_HEIGHT 16.0
+#define FLARE_AMOUNT 8.0
+#define FLARE_EXP 2.0
+#define TOP_FADE_START 0.1
+#define TOP_FADE_EXP 1.0
+#define FLOW_PERIOD 0.5
+#define FLOW_SHARPNESS 1.5
+#define W_BASE_X 1.5
+#define W_LAYER_GAP 0.25
+#define W_LANES 10
+#define W_SIDE_DECAY 0.5
+#define W_HALF 0.01
+#define W_AA 0.15
+#define W_CELL 20.0
+#define W_SEG_MIN 0.01
+#define W_SEG_MAX 0.55
+#define W_CURVE_AMOUNT 15.0
+#define W_CURVE_RANGE (FLARE_HEIGHT-3.0)
+#define W_BOTTOM_EXP 10.0
+#define FOG_ON 1
+#define FOG_CONTRAST 1.2
+#define FOG_OCTAVES 5
+#define FOG_BOTTOM_BIAS 0.8
+#define FOG_TILT_MAX_X 0.35
+#define FOG_TILT_SHAPE 1.5
+#define FOG_BEAM_MIN 0.0
+#define FOG_BEAM_MAX 0.75
+#define FOG_MASK_GAMMA 0.5
+#define FOG_EXPAND_SHAPE 12.2
+#define FOG_EDGE_MIX 0.5
+#define HFOG_EDGE_START 0.20
+#define HFOG_EDGE_END 0.98
+#define HFOG_EDGE_GAMMA 1.4
+#define HFOG_Y_RADIUS 25.0
+#define HFOG_Y_SOFT 60.0
+#define EDGE_X0 0.22
+#define EDGE_X1 0.995
+#define EDGE_X_GAMMA 1.25
+#define EDGE_LUMA_T0 0.0
+#define EDGE_LUMA_T1 2.0
+#define DITHER_STRENGTH 1.0
+#define EDGE_SOFT (DT_LOCAL*4.0)
+float g(float x){return x<=0.00031308?12.92*x:1.055*pow(x,1.0/2.4)-0.055;}
+float bs(vec2 p,vec2 q,float powr){float d=distance(p,q),f=powr*uFalloffStart,r=(f*f)/(d*d+EPS);return powr*min(1.0,r);}
+float bsa(vec2 p,vec2 q,float powr,vec2 s){vec2 d=p-q;float dd=(d.x*d.x)/(s.x*s.x)+(d.y*d.y)/(s.y*s.y),f=powr*uFalloffStart,r=(f*f)/(dd+EPS);return powr*min(1.0,r);}
+float tri01(float x){float f=fract(x);return 1.0-abs(f*2.0-1.0);}
+float tauWf(float t,float tmin,float tmax){float a=smoothstep(tmin,tmin+EDGE_SOFT,t),b=1.0-smoothstep(tmax-EDGE_SOFT,tmax,t);return max(0.0,a*b);}
+float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+34.123);return fract(p.x*p.y);}
+float vnoise(vec2 p){vec2 i=floor(p),f=fract(p);float a=h21(i),b=h21(i+vec2(1,0)),c=h21(i+vec2(0,1)),d=h21(i+vec2(1,1));vec2 u=f*f*(3.0-2.0*f);return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);}
+float fbm2(vec2 p){float v=0.0,amp=0.6;mat2 m=mat2(0.86,0.5,-0.5,0.86);for(int i=0;i<FOG_OCTAVES;++i){v+=amp*vnoise(p);p=m*p*2.03+17.1;amp*=0.52;}return v;}
+float rGate(float x,float l){float a=smoothstep(0.0,W_AA,x),b=1.0-smoothstep(l,l+W_AA,x);return max(0.0,a*b);}
+float flareY(float y){float t=clamp(1.0-(clamp(y,0.0,FLARE_HEIGHT)/max(FLARE_HEIGHT,EPS)),0.0,1.0);return pow(t,FLARE_EXP);}
+float vWisps(vec2 uv,float topF){
+  float y=uv.y,yf=(y+uFlowTime*uWSpeed)/W_CELL;
+  float dRaw=clamp(uWispDensity,0.0,2.0),d=dRaw<=0.0?1.0:dRaw;
+  float lanesF=floor(float(W_LANES)*min(d,1.0)+0.5);
+  int lanes=int(max(1.0,lanesF));
+  float sp=min(d,1.0),ep=max(d-1.0,0.0);
+  float fm=flareY(max(y,0.0)),rm=clamp(1.0-(y/max(W_CURVE_RANGE,EPS)),0.0,1.0),cm=fm*rm;
+  const float G=0.05;float xS=1.0+(FLARE_AMOUNT*W_CURVE_AMOUNT*G)*cm;
+  float sPix=clamp(y/R_V,0.0,1.0),bGain=pow(1.0-sPix,W_BOTTOM_EXP),sum=0.0;
+  for(int s=0;s<2;++s){
+    float sgn=s==0?-1.0:1.0;
+    for(int i=0;i<W_LANES;++i){
+      if(i>=lanes)break;
+      float off=W_BASE_X+float(i)*W_LAYER_GAP,xc=sgn*(off*xS);
+      float dx=abs(uv.x-xc),lat=1.0-smoothstep(W_HALF,W_HALF+W_AA,dx),amp=exp(-off*W_SIDE_DECAY);
+      float seed=h21(vec2(off,sgn*17.0)),yf2=yf+seed*7.0,ci=floor(yf2),fy=fract(yf2);
+      float seg=mix(W_SEG_MIN,W_SEG_MAX,h21(vec2(ci,off*2.3)));
+      float spR=h21(vec2(ci,off+sgn*31.0)),seg1=rGate(fy,seg)*step(spR,sp);
+      if(ep>0.0){float spR2=h21(vec2(ci*3.1+7.0,off*5.3+sgn*13.0));float f2=fract(fy+0.5);seg1+=rGate(f2,seg*0.9)*step(spR2,ep);}
+      sum+=amp*lat*seg1;
+    }
+  }
+  float span=smoothstep(-3.0,0.0,y)*(1.0-smoothstep(R_V-6.0,R_V,y));
+  return uWIntensity*sum*topF*bGain*span;
+}
+void mainImage(out vec4 fc,in vec2 frag){
+  vec2 C=iResolution.xy*.5;float invW=1.0/max(C.x,1.0);
+  vec2 sc=(512.0/iResolution.xy)*.4;
+  vec2 uv=(frag-C)*sc,off=vec2(uBeamXFrac*iResolution.x*sc.x,uBeamYFrac*iResolution.y*sc.y);
+  vec2 uvc=uv-off;
+  float a=0.0,b=0.0;
+  float basePhase=1.5*PI+uDecay*.5;float tauMin=basePhase-uDecay;float tauMax=basePhase;
+  float cx=clamp(uvc.x/(R_H*uHLenFactor),-1.0,1.0),tH=clamp(TWO_PI-acos(cx),tauMin,tauMax);
+  for(int k=-TAP_RADIUS;k<=TAP_RADIUS;++k){
+    float tu=tH+float(k)*DT_LOCAL,wt=tauWf(tu,tauMin,tauMax);if(wt<=0.0)continue;
+    float spd=max(abs(sin(tu)),0.02),u=clamp((basePhase-tu)/max(uDecay,EPS),0.0,1.0),env=pow(1.0-abs(u*2.0-1.0),0.8);
+    vec2 p=vec2((R_H*uHLenFactor)*cos(tu),0.0);
+    a+=wt*bs(uvc,p,env*spd);
+  }
+  float yPix=uvc.y,cy=clamp(-yPix/(R_V*uVLenFactor),-1.0,1.0),tV=clamp(TWO_PI-acos(cy),tauMin,tauMax);
+  for(int k=-TAP_RADIUS;k<=TAP_RADIUS;++k){
+    float tu=tV+float(k)*DT_LOCAL,wt=tauWf(tu,tauMin,tauMax);if(wt<=0.0)continue;
+    float yb=(-R_V)*cos(tu),s=clamp(yb/R_V,0.0,1.0),spd=max(abs(sin(tu)),0.02);
+    float env=pow(1.0-s,0.6)*spd;
+    float cap=1.0-smoothstep(TOP_FADE_START,1.0,s);cap=pow(cap,TOP_FADE_EXP);env*=cap;
+    float ph=s/max(FLOW_PERIOD,EPS)+uFlowTime*uFlowSpeed;
+    float fl=pow(tri01(ph),FLOW_SHARPNESS);
+    env*=mix(1.0-uFlowStrength,1.0,fl);
+    float yp=(-R_V*uVLenFactor)*cos(tu),m=pow(smoothstep(FLARE_HEIGHT,0.0,yp),FLARE_EXP),wx=1.0+FLARE_AMOUNT*m;
+    vec2 sig=vec2(wx,1.0),p=vec2(0.0,yp);
+    float mask=step(0.0,yp);
+    b+=wt*bsa(uvc,p,mask*env,sig);
+  }
+  float sPix=clamp(yPix/R_V,0.0,1.0),topA=pow(1.0-smoothstep(TOP_FADE_START,1.0,sPix),TOP_FADE_EXP);
+  float L=a+b*topA;
+  float w=vWisps(vec2(uvc.x,yPix),topA);
+  float fog=0.0;
+  vec2 fuv=uvc*uFogScale;
+  float mAct=step(1.0,length(iMouse.xy)),nx=((iMouse.x-C.x)*invW)*mAct;
+  float ax=abs(nx),stMag=mix(ax,pow(ax,FOG_TILT_SHAPE),0.35),st=sign(nx)*stMag*uTiltScale;
+  st=clamp(st,-FOG_TILT_MAX_X,FOG_TILT_MAX_X);
+  vec2 dir=normalize(vec2(st,1.0));
+  fuv+=uFogTime*uFogFallSpeed*dir;
+  vec2 prp=vec2(-dir.y,dir.x);
+  fuv+=prp*(0.08*sin(dot(uvc,prp)*0.08+uFogTime*0.9));
+  float n=fbm2(fuv+vec2(fbm2(fuv+vec2(7.3,2.1)),fbm2(fuv+vec2(-3.7,5.9)))*0.6);
+  n=pow(clamp(n,0.0,1.0),FOG_CONTRAST);
+  float pixW=1.0/max(iResolution.y,1.0);
+  float m0=pow(smoothstep(FOG_BEAM_MIN-pixW,FOG_BEAM_MAX+pixW,L),FOG_MASK_GAMMA);
+  float bm=1.0-pow(1.0-m0,FOG_EXPAND_SHAPE);bm=mix(bm*m0,bm,FOG_EDGE_MIX);
+  float yP=1.0-smoothstep(HFOG_Y_RADIUS,HFOG_Y_RADIUS+HFOG_Y_SOFT,abs(yPix));
+  float nxF=abs((frag.x-C.x)*invW),hE=1.0-smoothstep(HFOG_EDGE_START,HFOG_EDGE_END,nxF);hE=pow(clamp(hE,0.0,1.0),HFOG_EDGE_GAMMA);
+  float hW=mix(1.0,hE,clamp(yP,0.0,1.0));
+  float bBias=mix(1.0,1.0-sPix,FOG_BOTTOM_BIAS);
+  float radialFade=1.0-smoothstep(0.0,0.7,length(uvc)/120.0);
+  fog=n*uFogIntensity*1.8*bBias*bm*hW*radialFade;
+  float LF=L+fog;
+  float dith=(h21(frag)-0.5)*(DITHER_STRENGTH/255.0);
+  float tone=g(LF+w);
+  vec3 col=tone*uColor+dith;
+  float alpha=clamp(g(L+w*0.6)+dith*0.6,0.0,1.0);
+  float nxE=abs((frag.x-C.x)*invW),xF=pow(clamp(1.0-smoothstep(EDGE_X0,EDGE_X1,nxE),0.0,1.0),EDGE_X_GAMMA);
+  float scene=LF+max(0.0,w)*0.5,hi=smoothstep(EDGE_LUMA_T0,EDGE_LUMA_T1,scene);
+  float eM=mix(xF,1.0,hi);
+  col*=eM;alpha*=eM;
+  col*=uFade;alpha*=uFade;
+  fc=vec4(col,alpha);
+}
+void main(){vec4 fc;mainImage(fc,gl_FragCoord.xy);gl_FragColor=fc;}`;
+
+  const gl=canvas.getContext('webgl',{alpha:true,antialias:false,depth:false,stencil:false,premultipliedAlpha:false});
+  if(!gl){console.warn('LaserFlow: WebGL not supported');return;}
+
+  function compileShader(type,src){
+    const s=gl.createShader(type);
+    gl.shaderSource(s,src);
+    gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){
+      console.error('LaserFlow shader error:',gl.getShaderInfoLog(s));
+    }
+    return s;
+  }
+  const vs=compileShader(gl.VERTEX_SHADER,VERT);
+  const fs=compileShader(gl.FRAGMENT_SHADER,FRAG);
+  const prog=gl.createProgram();
+  gl.attachShader(prog,vs);
+  gl.attachShader(prog,fs);
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){
+    console.error('LaserFlow link error:',gl.getProgramInfoLog(prog));return;
+  }
+  gl.useProgram(prog);
+
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,0,3,-1,0,-1,3,0]),gl.STATIC_DRAW);
+  const posLoc=gl.getAttribLocation(prog,'position');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,0,0);
+
+  const U={};
+  ['iTime','iResolution','iMouse','uWispDensity','uTiltScale','uFlowTime','uFogTime',
+   'uBeamXFrac','uBeamYFrac','uFlowSpeed','uVLenFactor','uHLenFactor','uFogIntensity',
+   'uFogScale','uWSpeed','uWIntensity','uFlowStrength','uDecay','uFalloffStart',
+   'uFogFallSpeed','uColor','uFade'].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+
+  let flowT=0,fogT=0,fade=0,prevT=0;
+  let mx=0,my=0;
+  let inView=true,paused=false;
+
+  function resize(){
+    const sec=host.parentElement;
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    const w=sec.offsetWidth||sec.getBoundingClientRect().width||window.innerWidth;
+    const h=sec.offsetHeight||sec.getBoundingClientRect().height||400;
+    // Set canvas pixel size directly — no CSS width/height override
+    canvas.width=Math.round(w*dpr);
+    canvas.height=Math.round(h*dpr);
+    canvas.style.width=w+'px';
+    canvas.style.height=h+'px';
+    gl.viewport(0,0,canvas.width,canvas.height);
+    gl.uniform3f(U.iResolution,canvas.width,canvas.height,dpr);
+  }
+
+  const ro=new ResizeObserver(()=>resize());
+  ro.observe(host.parentElement);
+  resize();
+
+  const io=new IntersectionObserver(e=>{inView=e[0]?.isIntersecting??true;},{threshold:0});
+  io.observe(host.parentElement);
+  document.addEventListener('visibilitychange',()=>{paused=document.hidden;},{passive:true});
+
+  canvas.addEventListener('pointermove',e=>{
+    const r=canvas.getBoundingClientRect();
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    mx=(e.clientX-r.left)*dpr;
+    my=canvas.height-(e.clientY-r.top)*dpr;
+  },{passive:true});
+  canvas.addEventListener('pointerleave',()=>{mx=0;my=0;},{passive:true});
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+
+  function setUniforms(){
+    const [r,g2,b]=hexRGB(document.documentElement.getAttribute('data-theme')==='jungle'?'#ccff00':'#ccff00');
+    gl.uniform1f(U.uWispDensity,CFG.wispDensity);
+    gl.uniform1f(U.uTiltScale,CFG.mouseTiltStrength);
+    gl.uniform1f(U.uBeamXFrac,CFG.horizontalBeamOffset);
+    gl.uniform1f(U.uBeamYFrac,CFG.verticalBeamOffset);
+    gl.uniform1f(U.uFlowSpeed,CFG.flowSpeed);
+    gl.uniform1f(U.uVLenFactor,CFG.verticalSizing);
+    gl.uniform1f(U.uHLenFactor,CFG.horizontalSizing);
+    gl.uniform1f(U.uFogIntensity,CFG.fogIntensity);
+    gl.uniform1f(U.uFogScale,CFG.fogScale);
+    gl.uniform1f(U.uWSpeed,CFG.wispSpeed);
+    gl.uniform1f(U.uWIntensity,CFG.wispIntensity);
+    gl.uniform1f(U.uFlowStrength,CFG.flowStrength);
+    gl.uniform1f(U.uDecay,CFG.decay);
+    gl.uniform1f(U.uFalloffStart,CFG.falloffStart);
+    gl.uniform1f(U.uFogFallSpeed,CFG.fogFallSpeed);
+    gl.uniform3f(U.uColor,r,g2,b);
+  }
+
+  const clock={start:performance.now(),now(){return(performance.now()-this.start)/1000;}};
+
+  // Re-measure after layout settles
+  setTimeout(()=>resize(),100);
+
+  function tick(){
+    raf=requestAnimationFrame(tick);
+    if(paused||!inView)return;
+    const t=clock.now();
+    const dt=Math.min(Math.max(t-prevT,0.001),0.033);
+    prevT=t;
+    flowT+=dt;
+    fogT+=dt;
+    fade=Math.min(1,fade+dt/1.0);
+    setUniforms();
+    gl.uniform1f(U.iTime,t);
+    gl.uniform1f(U.uFlowTime,flowT);
+    gl.uniform1f(U.uFogTime,fogT);
+    gl.uniform4f(U.iMouse,mx,my,0,0);
+    gl.uniform1f(U.uFade,fade);
+    gl.clearColor(0,0,0,0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+  tick();
+})();
+
+/* ===== PIXEL TRAIL ===== */
+(function(){
+  const canvas=document.getElementById('pixelTrail');
+  const ctx=canvas.getContext('2d');
+  const GRID=22;
+  const MAX_AGE=250;
+  const THEME_COLORS={
+    jungle:'200,255,0',
+    moon:'5,5,5',
+    light:'47,124,246'
+  };
+  function getColor(){
+    return THEME_COLORS[document.documentElement.getAttribute('data-theme')]||'5,5,5';
+  }
+  let W,H,cols,rows,cells;
+  let mouse={x:-999,y:-999};
+  let lx=-999,ly=-999;
+
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+    cols=Math.ceil(W/GRID)+1;
+    rows=Math.ceil(H/GRID)+1;
+    cells=new Float32Array(cols*rows);
+  }
+  resize();
+  window.addEventListener('resize',resize,{passive:true});
+  window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;},{passive:true});
+
+  function lerp(a,b,t){return a+(b-a)*t;}
+
+  function stamp(x,y){
+    const cx=Math.floor(x/GRID);
+    const cy=Math.floor(y/GRID);
+    for(let dy=-1;dy<=1;dy++){
+      for(let dx=-1;dx<=1;dx++){
+        const nx=cx+dx,ny=cy+dy;
+        if(nx<0||ny<0||nx>=cols||ny>=rows)continue;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        const s=Math.max(0,1-dist/1.5);
+        const idx=ny*cols+nx;
+        cells[idx]=Math.min(1,cells[idx]+s*0.9);
+      }
+    }
+  }
+
+  const decay=1/(MAX_AGE/16.67);
+  const r=GRID*0.38;
+
+  function tick(){
+    requestAnimationFrame(tick);
+    lx=lerp(lx<-900?mouse.x:lx,mouse.x,0.22);
+    ly=lerp(ly<-900?mouse.y:ly,mouse.y,0.22);
+    stamp(lx,ly);
+    ctx.clearRect(0,0,W,H);
+    const COLOR=getColor();
+    for(let i=0;i<cells.length;i++){
+      if(cells[i]<0.01){cells[i]=0;continue;}
+      const col=i%cols;
+      const row=Math.floor(i/cols);
+      const cx=col*GRID+GRID/2;
+      const cy=row*GRID+GRID/2;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r*cells[i],0,Math.PI*2);
+      ctx.fillStyle=`rgba(${COLOR},${cells[i]})`;
+      ctx.fill();
+      cells[i]=Math.max(0,cells[i]-decay);
+    }
+  }
+  tick();
+})();
 </script>
 </body>
+<script type="module">
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+  import Strands from './Strands.jsx';
+
+  const host = document.getElementById('heroStrandsHost');
+  if (host) {
+    const root = createRoot(host);
+    root.render(
+      React.createElement(Strands, {
+        colors: ['#7CFF7A', '#2FD46A', '#C2FF6B'],
+        count: 5,
+        speed: 0.55,
+        amplitude: 1.05,
+        waviness: 1.1,
+        thickness: 0.8,
+        glow: 1.55,
+        taper: 2.8,
+        spread: 0.8,
+        intensity: 0.7,
+        saturation: 1.3,
+        opacity: 0.95,
+        scale: 1.35,
+        glass: false
+      })
+    );
+  }
+</script>
 </html>
