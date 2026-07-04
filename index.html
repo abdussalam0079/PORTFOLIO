@@ -40,10 +40,12 @@ html{
   overflow-x:hidden;
   overflow-y:auto!important;
   height:auto;
+  -webkit-overflow-scrolling:touch;
 }
 html,body{
   max-height:none!important;
   overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
 }
 img{max-width:100%;height:auto;display:block}
 button,input,textarea,select{font:inherit}
@@ -55,6 +57,7 @@ body{
   overflow-y:auto;
   min-height:100%;
   overscroll-behavior-y:auto;
+  touch-action:pan-y;
   cursor:none;
   opacity:0;
   transition:background .5s,color .5s,opacity .7s cubic-bezier(.22,1,.36,1);
@@ -594,7 +597,7 @@ body.menu-open{overflow:hidden!important}
 }
 .scroll-frame-lite{
   transform-origin:center center;
-  will-change:transform,opacity;
+  will-change:auto;
 }
 
 /* ============ BTN ============ */
@@ -1017,6 +1020,7 @@ body.menu-open{overflow:hidden!important}
   .mobile-menu{display:flex}
   .nav-links{display:none}
   .nav-status{display:none}
+  .scroll-frame-lite{transform:none!important;opacity:1!important;will-change:auto}
 
   .project-list{gap:.85rem}
   .project-row{
@@ -1778,7 +1782,8 @@ const scrollProgress=document.getElementById('scrollProgress');
 const sectionMap=[...document.querySelectorAll('section[id]')];
 const prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const supportsFinePointer=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-const allowHeavyFx=!prefersReducedMotion&&supportsFinePointer;
+const isTouchDevice=window.matchMedia('(hover: none), (pointer: coarse)').matches;
+const allowHeavyFx=!prefersReducedMotion&&supportsFinePointer&&!isTouchDevice;
 
 /* Ensure scroll is never locked on startup */
 document.body.style.overflow='';
@@ -1871,7 +1876,7 @@ if(yearNow) yearNow.textContent=String(new Date().getFullYear());
 /* ===== FRAME SCROLL ===== */
 const frameLiteEls=document.querySelectorAll('.scroll-frame-lite');
 function updateFrameScroll(){
-  if(prefersReducedMotion){
+  if(prefersReducedMotion||!allowHeavyFx){
     frameLiteEls.forEach(el=>{el.style.transform='';el.style.opacity='';});
     return;
   }
